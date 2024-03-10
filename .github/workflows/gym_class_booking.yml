@@ -30,4 +30,4 @@ jobs:
         env:
           creds: ${{ secrets.CREDS }}
           captcha_api_key: ${{ secrets.CAPTCHA_API_KEY }}
-        run: xvfb-run python gym_class_booking.py
+        run: xvfb-run python -u gym_class_booking.py
