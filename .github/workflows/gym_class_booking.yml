@@ -25,4 +25,4 @@ jobs:
         env:
           creds: ${{ secrets.CREDS }}
           captcha_api_key: ${{ secrets.CAPTCHA_API_KEY }}
-          run: python gym_class_booking.py
+        run: python gym_class_booking.py
