@@ -22,7 +22,10 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Instalar chromium para Playwright
-        run: python -m playwright install chromium
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y xvfb
+            xvfb-run python -m playwright install chromium
 
       - name: Ejecutar script gym_class_booking.py
         env:
