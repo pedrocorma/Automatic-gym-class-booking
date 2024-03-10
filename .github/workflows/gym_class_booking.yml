@@ -21,14 +21,13 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r requirements.txt
 
-      - name: Instalar chromium para Playwright
+      - name: Instalar Playwright xvfb y chromium
         run: |
-            sudo apt-get update
             sudo apt-get install -y xvfb
-            xvfb-run python -m playwright install chromium
+            python -m playwright install chromium
 
       - name: Ejecutar script gym_class_booking.py
         env:
           creds: ${{ secrets.CREDS }}
           captcha_api_key: ${{ secrets.CAPTCHA_API_KEY }}
-        run: python gym_class_booking.py
+        run: xvfb-run python gym_class_booking.py
