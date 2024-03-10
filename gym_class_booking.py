@@ -132,7 +132,7 @@ with sync_playwright() as playwright:
     creds,captcha_api_key =  load_env_vars()
     
     # Playwright setup
-    browser = playwright.chromium.launch(headless=False)
+    browser = playwright.chromium.launch(headless=True)
     context = browser.new_context(locale="es")
     page = context.new_page()
 
