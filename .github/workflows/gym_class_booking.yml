@@ -33,6 +33,7 @@ jobs:
           creds: ${{ secrets.CREDS }}
           captcha_api_key: ${{ secrets.CAPTCHA_API_KEY }}
         run: python -u gym_class_booking.py
+        continue-on-error: true
 
   notify:
     runs-on: ubuntu-latest
