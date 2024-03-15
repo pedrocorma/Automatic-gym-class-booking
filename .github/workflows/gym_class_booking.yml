@@ -20,12 +20,37 @@ jobs:
 
       - name: Instalar dependencias
         run: pip install -r requirements.txt
+        continue-on-error: true
 
       - name: Instalar Playwright Chromium
+        if: ${{ success() }}
         run: python -m playwright install chromium
+        continue-on-error: true
 
       - name: Ejecutar script gym_class_booking.py
+        if: ${{ success() }}
         env:
           creds: ${{ secrets.CREDS }}
           captcha_api_key: ${{ secrets.CAPTCHA_API_KEY }}
         run: python -u gym_class_booking.py
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Notificacion reserva exitosa
+        if: ${{ success() }}
+        uses: appleboy/telegram-action@v0.1.1
+        with:
+          to: ${{ secrets.TELEGRAM_BOT_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: "✅ Has reservado la clase."
+
+      - name: Notificacion reserva fallida
+        if: ${{ failure() }}
+        uses: appleboy/telegram-action@v0.1.1
+        with:
+          to: ${{ secrets.TELEGRAM_BOT_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: "❌ No se ha podido realizar la reserva."
