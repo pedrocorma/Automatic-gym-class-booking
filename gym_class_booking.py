@@ -2,7 +2,7 @@ from playwright.sync_api import Playwright, sync_playwright, expect
 from time import sleep, time
 from twocaptcha import TwoCaptcha
 from pytz import timezone
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, time as datetime_time
 import pandas as pd
 import os
 from dotenv import load_dotenv
@@ -49,7 +49,18 @@ def log_time():
     log_time = datetime.now(timezone('Europe/Madrid')).strftime('%Y-%m-%d-%H:%M:%S')
     return log_time
 
-# 1.5 Solver de captcha
+# 1.5 Esperar hasta la hora en que se habilitan las reservas
+def wait_until_booking_time(hora_inicio,offset):
+    h_inicio, min_inicio = map(int,hora_inicio.split(':'))
+    hora_reserva = datetime_time(h_inicio,min_inicio,offset)
+    hora_actual = datetime.now(timezone('Europe/Madrid')).time()
+    seconds_dif = round((datetime.combine(date.today(),hora_reserva) - datetime.combine(date.today(),hora_actual)).total_seconds())
+    sleep_seconds = max(seconds_dif,0)
+    print(log_time(), f': Esperando {sleep_seconds}s hasta las {hora_reserva} para continuar la reserva...')
+    sleep(sleep_seconds)
+    print(log_time(),': Tiempo de espera finalizado. Continua el proceso de reserva.')
+
+# 1.6 Solver de captcha
 def captcha_solver(api_key, url, sitekey):
     start_time = time()
     solver = TwoCaptcha(api_key)
@@ -63,11 +74,11 @@ def captcha_solver(api_key, url, sitekey):
         print(log_time(),f": Captcha resuelto correctamente tras {execution_time} s.")
         return captcha_code
 
-# 1.6 Logeo en la web
+# 1.7 Logeo en la web
 def login(user, password, captcha_api_key):
     url_login = "https://cddenia.virtuagym.com/"
     # login
-    print(log_time(),f': Iniciando sesión ({user}) ...')
+    print(log_time(),f': Iniciando sesión...')
     page.goto(url_login)
     page.get_by_label("Correo electrónico").fill(user)
     page.get_by_label("Contraseña").fill(password)
@@ -82,7 +93,7 @@ def login(user, password, captcha_api_key):
     page.get_by_role("button", name="Iniciar sesión").click()
     print(log_time(),f': Sesión iniciada.')
     
-# 1.7 Reserva de clase
+# 1.8 Reserva de clase
 def reservar_clase(clase, dia, hora_inicio, dia_ejecucion_reserva, df_tm_clases, df_tm_horario):
     print(log_time(),f': Reservando {clase} el {dia} a las {hora_inicio}...')
     url_horario_clases = "https://cddenia.virtuagym.com/classes/week/" + dia_ejecucion_reserva
@@ -95,7 +106,7 @@ def reservar_clase(clase, dia, hora_inicio, dia_ejecucion_reserva, df_tm_clases,
     print(log_time(),': Clase reservada.')
     #page.get_by_text("Has reservado").click()
 
-# 1.8 Logout
+# 1.9 Logout
 def logout(user):
     print(log_time(),f': Cerrando sesión ({user}) ...')
     url_logout = 'https://cddenia.virtuagym.com/'
@@ -127,6 +138,10 @@ print(36*'*' + '\n' + 'SCRIPT RESERVA CLASES GYM INICIADO' + '\n' + 36*'*')
 
 dia_ejecucion_reserva = (datetime.now(timezone('Europe/Madrid')) + timedelta(days=1)).strftime('%Y-%m-%d')
 
+# Esperar hasta la hora en que habilitan reservas
+wait_until_booking_time(hora_inicio,30)
+
+# Reservar
 with sync_playwright() as playwright:
     # Carga variables entorno
     creds,captcha_api_key =  load_env_vars()
