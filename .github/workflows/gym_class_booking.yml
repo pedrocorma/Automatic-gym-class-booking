@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: Notificacion reserva exitosa
-        if: ${{ needs.build.outputs.job_status=='success' }}
+        if: ${{ always()&&(needs.build.outputs.job_status=='success') }}
         uses: appleboy/telegram-action@v0.1.1
         with:
           to: ${{ secrets.TELEGRAM_BOT_CHAT_ID }}
@@ -45,7 +45,7 @@ jobs:
           message: "✅ Has reservado la clase."
 
       - name: Notificacion reserva fallida
-        if: ${{ needs.build.outputs.job_status=='failure' }}
+        if: ${{ always()&&(needs.build.outputs.job_status=='failure') }}
         uses: appleboy/telegram-action@v0.1.1
         with:
           to: ${{ secrets.TELEGRAM_BOT_CHAT_ID }}
