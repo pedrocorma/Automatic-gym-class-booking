@@ -20,22 +20,18 @@ jobs:
 
       - name: Instalar dependencias
         run: pip install -r requirements.txt
-        continue-on-error: true
 
       - name: Instalar Playwright Chromium
-        if: ${{ success() }}
         run: python -m playwright install chromium
-        continue-on-error: true
 
       - name: Ejecutar script gym_class_booking.py
-        if: ${{ success() }}
         env:
           creds: ${{ secrets.CREDS }}
           captcha_api_key: ${{ secrets.CAPTCHA_API_KEY }}
         run: python -u gym_class_booking.py
-        continue-on-error: true
 
   notify:
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     needs: build
 
