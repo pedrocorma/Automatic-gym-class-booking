@@ -50,9 +50,8 @@ def log_time():
     return log_time
 
 # 1.5 Esperar hasta la hora en que se habilitan las reservas
-def wait_until_booking_time(hora_inicio,offset):
-    h_inicio, min_inicio = map(int,hora_inicio.split(':'))
-    hora_reserva = datetime_time(h_inicio,min_inicio,offset)
+def wait_until_booking_time(hora_inicio,offset_min):
+    hora_reserva = (datetime.strptime(hora_inicio,"%H:%M") + timedelta(minutes=offset_min)).time()
     hora_actual = datetime.now(timezone('Europe/Madrid')).time()
     seconds_dif = round((datetime.combine(date.today(),hora_reserva) - datetime.combine(date.today(),hora_actual)).total_seconds())
     sleep_seconds = max(seconds_dif,0)
@@ -139,7 +138,7 @@ print(36*'*' + '\n' + 'SCRIPT RESERVA CLASES GYM INICIADO' + '\n' + 36*'*')
 dia_ejecucion_reserva = (datetime.now(timezone('Europe/Madrid')) + timedelta(days=1)).strftime('%Y-%m-%d')
 
 # Esperar hasta la hora en que habilitan reservas
-wait_until_booking_time(hora_inicio,30)
+wait_until_booking_time(hora_inicio,2)
 
 # Reservar
 with sync_playwright() as playwright:
