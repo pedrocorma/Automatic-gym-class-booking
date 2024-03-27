@@ -138,7 +138,7 @@ print(36*'*' + '\n' + 'SCRIPT RESERVA CLASES GYM INICIADO' + '\n' + 36*'*')
 dia_ejecucion_reserva = (datetime.now(timezone('Europe/Madrid')) + timedelta(days=1)).strftime('%Y-%m-%d')
 
 # Esperar hasta la hora en que habilitan reservas
-wait_until_booking_time(hora_inicio,2)
+wait_until_booking_time(hora_inicio,5)
 
 # Reservar
 with sync_playwright() as playwright:
