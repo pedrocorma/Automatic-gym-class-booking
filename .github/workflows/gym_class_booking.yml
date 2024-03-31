@@ -2,7 +2,7 @@ name: Automatic Gym class booking
 
 on:
   schedule:
-    - cron: '50 18 * * 3'
+    - cron: '50 17 * * 3'
   workflow_dispatch:
 
 jobs:
